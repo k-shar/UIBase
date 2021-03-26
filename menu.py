@@ -7,9 +7,10 @@ def menu(screen):
     clock = pygame.time.Clock()
     pygame.display.set_caption("Menu Screen")
 
-    window = Window((100, 100), GREEN, (0.9, 0.9), (0.5, 0.5), screen)
-    pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, {'size': (500, 300), 'w': 500, 'h': 300}))
+    window = Window((100, 100), GREEN)
+    # game_space = Window((10, 10), BLUE)
 
+    pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, {'w': 500, 'h': 300}))
     while True:
         screen.fill(RED)
 
@@ -18,9 +19,10 @@ def menu(screen):
                 return screen
             if event.type == pygame.VIDEORESIZE:
                 screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
-                window.resize()
+                window.resize(screen)
 
-        window.draw()
+        screen.blit(window.image, (window.rect.x, window.rect.y))
+        # window.blit(game_space, (20, 20))
 
         pygame.display.update()
         clock.tick(30)
