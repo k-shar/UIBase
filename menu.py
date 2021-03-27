@@ -1,14 +1,16 @@
 import pygame
 from constants import *
-from window_sizing import Window
+from window_sizing import ScaleWindow
 
 
 def menu(screen):
     clock = pygame.time.Clock()
     pygame.display.set_caption("Menu Screen")
 
-    window = Window((100, 100), GREEN)
-    # game_space = Window((10, 10), BLUE)
+    # define Window elements
+    border = ScaleWindow(GREEN, (0.9, 0.9), (0.5, 0.5))
+    game_space = ScaleWindow(BLUE, (0.5, 0.4), (0.3, 0.5))
+    tile = ScaleWindow(WHITE, (0.3, 0.5), (0.7, 0.4))
 
     pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, {'w': 500, 'h': 300}))
     while True:
@@ -18,11 +20,17 @@ def menu(screen):
             if event.type == pygame.QUIT:
                 return screen
             if event.type == pygame.VIDEORESIZE:
-                screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
-                window.resize(screen)
 
-        screen.blit(window.image, (window.rect.x, window.rect.y))
-        # window.blit(game_space, (20, 20))
+                # resize largest to smallest, as to pass in the new resized parent surf
+                screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                border.resize(screen)
+                game_space.resize(border.image)
+                tile.resize(game_space.image)
+
+        # blit the child surface onto the parent surface, at a position relative to the parent
+        screen.blit(border.image, (border.rect.x, border.rect.y))
+        border.image.blit(game_space.image, (game_space.rect.x, game_space.rect.y))
+        game_space.image.blit(tile.image, (tile.rect.x, tile.rect.y))
 
         pygame.display.update()
         clock.tick(30)
