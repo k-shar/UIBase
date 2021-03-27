@@ -1,6 +1,6 @@
 import pygame
 from constants import *
-from window_sizing import ScaleWindow
+from window_sizing import ScaleWindow, AspectWindow
 
 
 def menu(screen):
@@ -9,8 +9,8 @@ def menu(screen):
 
     # define Window elements
     border = ScaleWindow(GREEN, (0.9, 0.9), (0.5, 0.5))
-    game_space = ScaleWindow(BLUE, (0.5, 0.4), (0.3, 0.5))
-    tile = ScaleWindow(WHITE, (0.3, 0.5), (0.7, 0.4))
+    game_space = AspectWindow(BLUE, (9, 4), 0)
+    tile = AspectWindow(WHITE, (16, 9), 0)
 
     pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, {'w': 500, 'h': 300}))
     while True:
