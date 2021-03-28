@@ -13,7 +13,7 @@ class ScaleWindow:
         self.color = color
         self.image.fill(self.color)
 
-        # define the relative scale of the window
+        # define the relative pos and scale of the window
         self.rel_pos = pos_relative_to_parent
         self.rel_size = size_relative_to_parent
 
@@ -81,6 +81,19 @@ class AspectWindow:
                 self.rect.centerx = (max_size[0] / self.padding) * self.pos[0]
                 self.rect.centery = (max_size[1] / self.padding) * self.pos[1]
                 overflown = True
+
+
+class TextWindow(AspectWindow):
+    def __init__(self, color, aspect_ratio: tuple, pos: tuple, padding: float, text: str):
+        super().__init__(color, aspect_ratio, pos, padding)
+        self.text = text
+        self.font = "this needs to be redefined every resize event, as the size will change"
+
+    def resize(self, parent: pygame.Surface):
+        super().resize(parent)
+        self.font = pygame.freetype.SysFont("bell", self.image.get_height())
+        text_surf, text_rect = self.font.render(self.text, fgcolor=(255, 255, 255))
+        self.image.blit(text_surf, text_surf.get_rect(center=self.image.get_rect().center))
 
 
 
