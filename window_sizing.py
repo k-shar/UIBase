@@ -35,7 +35,7 @@ class ScaleWindow:
 
 class AspectWindow:
     """a Class containing a Surface, that scales to be as large as possible, while maintaining a given aspect ratio"""
-    def __init__(self, color, aspect_ratio: tuple, padding: int):
+    def __init__(self, color, aspect_ratio: tuple, pos: tuple, padding: float):
 
         # create surface and rect with some arbitrary non-zero size
         self.image = pygame.Surface((1, 1))
@@ -50,13 +50,17 @@ class AspectWindow:
         # if padding = 0, there *may* be some small overflow
         # if padding = 1, there will never be overflow
         # if padding > 1, padding will shrink the windows size
+        self.pos = pos
         self.padding = padding
 
     def resize(self, parent: pygame.Surface):
         """Resize the surface and the rect's position, maintaining the aspect_ratio"""
         self.image.fill(self.color)
 
-        max_size = parent.get_size()
+        max_size = list(parent.get_size())
+        # reduce max size down dependant on padding
+        max_size[0] *= self.padding
+        max_size[1] *= self.padding
         current_size = [1, 1]
 
         # search for the max size we can grow to, while not overflowing parent
@@ -66,19 +70,16 @@ class AspectWindow:
             current_size[0] += self.aspect_ratio[0]
             current_size[1] += self.aspect_ratio[1]
 
-            # if this new size is >= to the size of our container, rollback last change
+            # if this new size is >= to the size of our container,
             if current_size[0] >= max_size[0] or current_size[1] >= max_size[1]:
-                # rollback a few times according to padding
-                current_size[0] -= self.aspect_ratio[0] * self.padding
-                current_size[1] -= self.aspect_ratio[1] * self.padding
-
                 # scale surface and rect to this new found size
                 self.image = pygame.transform.scale(self.image, current_size)
                 self.rect = self.image.get_rect()
 
-                # set position of rect to be central
-                self.rect.centerx = max_size[0] // 2
-                self.rect.centery = max_size[1] // 2
+                # set position of rect to a fraction of the size of parent
+                # after removing the shrinking effect of the padding variable
+                self.rect.centerx = (max_size[0] / self.padding) * self.pos[0]
+                self.rect.centery = (max_size[1] / self.padding) * self.pos[1]
                 overflown = True
 
 
